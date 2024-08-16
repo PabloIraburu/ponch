@@ -1,4 +1,3 @@
-import * as React from "react";
 import { createRoot } from "react-dom/client";
 import {
     createBrowserRouter,
@@ -25,6 +24,6 @@ const router = createBrowserRouter([
     },
 ]);
 
-createRoot(document.getElementById("root")).render(
-    <RouterProvider router={router}/>
+createRoot(document.getElementById("root") as HTMLElement).render(
+    <RouterProvider router={router} />
 );

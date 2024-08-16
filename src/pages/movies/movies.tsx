@@ -8,7 +8,7 @@ import {Movie} from "../../types/movies.ts";
 
 export const Movies = () => {
     console.log(javiMovies);
-    const rows = javiMovies as Movie[];
+    const rows = javiMovies as any as Movie[];
     return (
         <div>
             <h1>Movies</h1>

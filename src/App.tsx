@@ -1,5 +1,4 @@
 import './App.css'
-import {Link, NavLink} from "react-router-dom";
 
 function App() {
 
@@ -8,7 +7,7 @@ function App() {
       <div>
           <a href="https://vitejs.dev" target="_blank">
             <svg fill="#646cff" height="160px" width="160px" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                   viewBox="0 0 470 470" xmlns:xlink="http://www.w3.org/1999/xlink" enableBackground="new 0 0 470 470">
+                   viewBox="0 0 470 470" enableBackground="new 0 0 470 470">
                   <g>
                       <path
                           d="m301.398,245.215c-4.143,0-7.5,3.358-7.5,7.5v28.749h-125.297c-4.143,0-7.5,3.358-7.5,7.5 0,40.748 33.151,73.899 73.899,73.899s73.898-33.151 73.898-73.899v-36.249c0-4.142-3.357-7.5-7.5-7.5zm-66.398,102.649c-29.936,0-54.728-22.452-58.424-51.399h116.847c-3.696,28.947-28.487,51.399-58.423,51.399z"/>
