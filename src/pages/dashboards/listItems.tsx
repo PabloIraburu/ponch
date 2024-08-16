@@ -17,7 +17,7 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Musica" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton href="movies">
       <ListItemIcon>
         <ShoppingCartIcon />
       </ListItemIcon>
