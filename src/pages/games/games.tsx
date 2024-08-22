@@ -9,7 +9,6 @@ import {useEffect, useState} from "react";
 const HIDDEN_COLUMNS = ["created_at", "id"];
 
 export const Games = () => {
-    console.log('api', api)
     const [games, setGames] = useState<any[]>([]);
     useEffect(() => {
     api.get("games").then(({data}) => setGames(data as any[]));
