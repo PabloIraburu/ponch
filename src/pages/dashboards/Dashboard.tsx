@@ -16,13 +16,14 @@ import Paper from '@mui/material/Paper';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { mainListItems, secondaryListItems } from './listItems';
+import { mainListItems } from './listItems';
 import Chart from './Chart';
 import Deposits from './Deposits';
 import Orders from './Orders';
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import {EntityView} from "../entityView.tsx";
 import {Movies} from "../movies/movies.tsx";
+import {Games} from "../games/games.tsx";
 
 
 const DashboardContent = () => {
@@ -137,12 +138,26 @@ const router = createBrowserRouter([
     path: "/movies",
     element: <Movies/>,
   },
+  {
+    path: "/games",
+    element: <Games/>,
+  },
+
 ]);
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
+const drawerDictionary = {
+    "/": "Dashboard",
+    "/music": "Música",
+    "/movies": "Películas",
+    "/games": "Videojuegos",
+    "/boardgames": "Juegos de mesa",
+}
 export default function Dashboard() {
   const [open, setOpen] = React.useState(true);
+  const { pathname } = window.location;
+  console.log(pathname);
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -176,7 +191,7 @@ export default function Dashboard() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              {drawerDictionary[pathname]}
             </Typography>
             <IconButton color="inherit">
               <Badge badgeContent={4} color="secondary">
@@ -201,8 +216,8 @@ export default function Dashboard() {
           <Divider />
           <List component="nav">
             {mainListItems}
-            <Divider sx={{ my: 1 }} />
-            {secondaryListItems}
+            {/*<Divider sx={{ my: 1 }} />
+            {secondaryListItems}*/}
           </List>
         </Drawer>
         <Box
