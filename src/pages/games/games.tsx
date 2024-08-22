@@ -4,16 +4,15 @@ import TableRow from "@mui/material/TableRow";
 import TableHead from "@mui/material/TableHead";
 import TableBody from "@mui/material/TableBody";
 import {api} from "../../utils/api.ts";
-import listaJavier from "../movies/javiMovies.json";
 import {useEffect, useState} from "react";
 
 const HIDDEN_COLUMNS = ["created_at", "id"];
 
 export const Games = () => {
     console.log('api', api)
-    const [games, setGames] = useState([]);
+    const [games, setGames] = useState<any[]>([]);
     useEffect(() => {
-    api.get("games").then(({data}) => setGames(data));
+    api.get("games").then(({data}) => setGames(data as any[]));
     }, []);
     console.log('games', games);
     if(games.length === 0) {
@@ -39,14 +38,14 @@ export const Games = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {games.map((row) => {
+                    {games.map((row: {id: string}) => {
                                     return <TableRow key={row.id}>
                                         {Object.entries(row).map(([key, value]) => {
                                             if (HIDDEN_COLUMNS.includes(key)) {
                                                 return
                                             } else {
                                                 return (
-                                                    <TableCell>{value}</TableCell>
+                                                    <TableCell>{value as string}</TableCell>
                                                 );
                                             }
                                         })}
