@@ -1,17 +1,73 @@
-import Table from "@mui/material/Table";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
-import TableHead from "@mui/material/TableHead";
-import TableBody from "@mui/material/TableBody";
 import {api} from "../../utils/api.ts";
 import {useEffect, useState} from "react";
 import {Star, StarHalf, StarOutline} from "@mui/icons-material";
+import {DataGrid, GridToolbar} from "@mui/x-data-grid";
+import {Modal} from "@mui/material";
 
 const HIDDEN_COLUMNS = ["created_at", "id", "j", "p"];
 
+const getColumns = (columnNames: string[]) => {
+    return columnNames.map((columnName) => {
+        if(columnName.includes('score') || columnName.includes('average')) {
+            return {
+                field: columnName,
+                width: 150,
+                headerName: columnName,
+                renderCell: (params: any) => {
+                    const {value} = params;
+                        const filledStars = Math.floor(value / 2);
+                        const hasHalf = value % 2 === 1;
+                        const emptyStars = 5 - filledStars - (hasHalf ? 1 : 0);
+                        const stars = []
+                        for(let i = 0; i < filledStars; i++) {
+                            stars.push(<Star color="primary"/>);
+                        }
+                        if(hasHalf)
+                            stars.push(<StarHalf color="primary"/>);
+                        for(let i = 0; i < emptyStars; i++) {
+                            stars.push(<StarOutline color="primary"/>);
+                        }
+
+                    return (
+                        <div>
+                            {stars}
+                        </div>
+                    )
+                }
+            }
+        }
+        if(columnName === "finished_story_javi" || columnName === "finished_story_pablo"){
+            return {
+                field: columnName,
+                headerName: columnName,
+                renderCell: (params: any) => {
+                    const {value} = params;
+                    const isBoolean = ['Si', "No", null].includes(value);
+                    return (
+                        <div>
+                            {isBoolean ? <input type="checkbox" checked={value === "Si"}/> : <p>{value}</p>}
+                        </div>
+                    )
+                }
+        }}
+        if(columnName === "id" || columnName === "j" || columnName === "p") {
+            return {
+                field: columnName,
+                headerName: columnName,
+                hide: true,
+            }
+        }
+        return {
+            field: columnName,
+            headerName: columnName,
+            hide: HIDDEN_COLUMNS.includes(columnName),
+        }
+    });
+}
+
 export const Games = () => {
     const [games, setGames] = useState<any[]>([]);
-    const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
+    const [viewModal, setViewModal] = useState(false);
     useEffect(() => {
     api.get("games").then(({data}) => setGames(data as any[]));
     }, []);
@@ -20,108 +76,32 @@ export const Games = () => {
         return <div>Loading...</div>
     }
     const columnNames = Object.keys(games[0]);
+    const columnsForGrid = getColumns(columnNames)
+    console.log('columns for grid', columnsForGrid, games)
     return (
         <div>
             <h1>Movies</h1>
+            <button onClick={()=> setViewModal(true)}>Add movie</button>
             <div style={{
                 display: 'flex',
                 gap: '8px',
             }}>
-
-            {
-               columnNames.map((columnName) => {
-                   if([...HIDDEN_COLUMNS, "title"].includes(columnName)) {
-                          return null;
-                     }
-                     return (
-                          <button style={{backgroundColor: visibleColumns.includes(columnName) ? 'green' : 'red',
-                              color: 'white',
-                                border: 'none',
-                                padding: '8px',
-                                cursor: 'pointer',
-                                borderRadius: '4px',
-                          }}
-                                  onClick={() => {
-                            if(visibleColumns.includes(columnName)) {
-                                 setVisibleColumns(visibleColumns.filter((column) => column !== columnName));
-                            } else {
-                                 setVisibleColumns([...visibleColumns, columnName]);
-                            }
-                          }}>{columnName}</button>
-                     );
-                })
-            }
+                <DataGrid columns={columnsForGrid} rows={games} checkboxSelection slots={{ toolbar: GridToolbar }}/>
             </div>
-
-            <Table stickyHeader>
-                <TableHead>
-                    <TableRow>
-                        {
-                            Object.keys(games[0]).map((key) => {
-                                console.log('key', key);
-                                if (HIDDEN_COLUMNS.includes(key) || (visibleColumns.length > 0 && !visibleColumns.includes(key))) {
-                                    return
-                                }
-                                return (
-                                    <TableCell>{key}</TableCell>
-                                );
-                            })
+            <Modal open={viewModal} onClose={() => setViewModal(false)}>
+                <div style={{backgroundColor: "white", display: "flex", flexDirection: "column", justifyItems: "center", padding: "32px"}}>
+                    <h1>Add movie</h1>
+                    <div style={{backgroundColor: "white", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px"}}>
+                        {columnNames.map((columnName) => {
+                            return (
+                                <input style={{width: 150}} type="text" placeholder={columnName}/>
+                            )
                         }
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {games.map((row: {id: string}) => {
-                        if(row.title === undefined) {
-                            return null;
-                        }
-                        return <TableRow key={row.id}>
-                            {Object.entries(row).map(([key, value]:[string, any]) => {
-                                if (HIDDEN_COLUMNS.includes(key) || (visibleColumns.length > 0 && !visibleColumns.includes(key))) {
-                                    return
-                                } else {
-                                    if(["Si", "No"].includes(value)){
-                                        return (
-                                            <TableCell><input style={
-                                                {
-                                                    width: '20px',
-                                                    height: '20px',
-                                                    padding: '8px',
-                                                }
-                                            } type="checkbox" checked={value === "Si"}/></TableCell>
-                                        )
-                                    }
-                                    if(typeof value === "number" && value < 10) {
-                                        const filledStars = value / 2;
-                                        const hasHalf = value % 2 === 1;
-                                        const emptyStars = 5 - filledStars;
-
-                                        console.log('value', value);
-                                        return (
-                                            <TableCell width={150}>{Array.from(
-                                                {length: filledStars},
-                                                (_, index) => <Star key={index} color="primary"/>
-                                            )}
-                                                {hasHalf && (
-                                                    <StarHalf color="primary"/>
-                                                )}
-                                                {emptyStars && (
-                                                    Array.from(
-                                                        {length: emptyStars},
-                                                        (_, index) => <StarOutline key={index} color="primary"/>
-                                                    )
-                                                )}</TableCell>
-                                        );
-                                    }
-                                    return (
-                                        <TableCell>{value as string}</TableCell>
-                                    );
-                                }
-                            })}
-                        </TableRow>
-                    })
-                    }
-                </TableBody>
-            </Table>
+                        )}
+                    <button style={{width: 150}} >Add</button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 }
